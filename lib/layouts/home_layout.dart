@@ -1,3 +1,4 @@
+import 'package:conditional_builder/conditional_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
@@ -5,6 +6,7 @@ import 'package:todo_app/modules/archieved_screen.dart';
 import 'package:todo_app/modules/done_screen.dart';
 import 'package:todo_app/modules/tasks_screen.dart';
 import 'package:todo_app/shared/components/components.dart';
+import 'package:todo_app/shared/components/constants.dart';
 
 class HomeLayout extends StatefulWidget {
   @override
@@ -58,98 +60,100 @@ class _HomeLayoutState extends State<HomeLayout> {
               });
             }
           } else {
-            _scaffoldKey.currentState.showBottomSheet((context) {
-
-              return Container(
-                padding: EdgeInsets.all(15),
-                // color: Colors.blue[400],
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      DefaultFormValidation(
-                        label: "Title",
-                        prefix: Icons.title,
-                        textController: titleController,
-                        type: TextInputType.name,
-                        validate: (value) {
-                          if (value.isEmpty) {
-                            return "Title must be written";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      DefaultFormValidation(
-                        label: "Time",
-                        prefix: Icons.access_time,
-                        textController: timeController,
-                        type: TextInputType.datetime,
-                        onTap: () async {
-                          final TimeOfDay pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.now(),
-                            builder: (BuildContext context, Widget child) {
-                              return MediaQuery(
-                                data: MediaQuery.of(context)
-                                    .copyWith(alwaysUse24HourFormat: true),
-                                child: child,
-                              );
+            _scaffoldKey.currentState
+                .showBottomSheet((context) {
+                  return Container(
+                    padding: EdgeInsets.all(15),
+                    // color: Colors.blue[400],
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DefaultFormValidation(
+                            label: "Title",
+                            prefix: Icons.title,
+                            textController: titleController,
+                            type: TextInputType.name,
+                            validate: (value) {
+                              if (value.isEmpty) {
+                                return "Title must be written";
+                              }
+                              return null;
                             },
-                          );
-                          setState(() {
-                            timeController.text = pickedTime.format(context);
-                          });
-                        },
-                        validate: (value) {
-                          if (value.isEmpty) {
-                            return "Time must be selected";
-                          }
-                          return null;
-                        },
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          DefaultFormValidation(
+                            label: "Time",
+                            prefix: Icons.access_time,
+                            textController: timeController,
+                            type: TextInputType.datetime,
+                            onTap: () async {
+                              final TimeOfDay pickedTime = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.now(),
+                                builder: (BuildContext context, Widget child) {
+                                  return MediaQuery(
+                                    data: MediaQuery.of(context)
+                                        .copyWith(alwaysUse24HourFormat: true),
+                                    child: child,
+                                  );
+                                },
+                              );
+                              setState(() {
+                                timeController.text =
+                                    pickedTime.format(context);
+                              });
+                            },
+                            validate: (value) {
+                              if (value.isEmpty) {
+                                return "Time must be selected";
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          DefaultFormValidation(
+                            label: "Date",
+                            prefix: Icons.date_range_rounded,
+                            textController: dateController,
+                            type: TextInputType.datetime,
+                            onTap: () {
+                              showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime(2100))
+                                  .then((value) {
+                                setState(() {
+                                  dateController.text =
+                                      DateFormat("dd-MM-yyyy").format(value);
+                                });
+                              });
+                            },
+                            validate: (value) {
+                              if (value.isEmpty) {
+                                return "Date must be selected";
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      DefaultFormValidation(
-                        label: "Date",
-                        prefix: Icons.date_range_rounded,
-                        textController: dateController,
-                        type: TextInputType.datetime,
-                        onTap: () {
-                          showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(1900),
-                                  lastDate: DateTime(2100))
-                              .then((value) {
-                            setState(() {
-                              dateController.text =
-                                  DateFormat("dd-MM-yyyy").format(value);
-                            });
-                          });
-                        },
-                        validate: (value) {
-                          if (value.isEmpty) {
-                            return "Date must be selected";
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              );
-
-            }).closed.then((value) {
-              isBottomSheetShown = false;
-                setState(() {
-                  flatIcon = Icons.edit;
+                    ),
+                  );
+                })
+                .closed
+                .then((value) {
+                  isBottomSheetShown = false;
+                  setState(() {
+                    flatIcon = Icons.edit;
+                  });
                 });
-            });
             setState(() {
               flatIcon = Icons.add;
               isBottomSheetShown = true;
@@ -180,7 +184,9 @@ class _HomeLayoutState extends State<HomeLayout> {
               icon: Icon(Icons.archive_outlined), label: "Archived")
         ],
       ),
-      body: screens[selectedScreen],
+      body:ConditionalBuilder(condition: tasks.length>0,
+      builder:(context)=> screens[selectedScreen],
+      fallback:(context)=>Center(child: CircularProgressIndicator())),
     );
   }
 
@@ -189,17 +195,20 @@ class _HomeLayoutState extends State<HomeLayout> {
       myDatabase = await openDatabase("todo_app.db", version: 1,
           onCreate: (myDatabase, version) {
         print("Database created");
-
-        myDatabase
-            .execute(
-                "create table Tasks(Id int primary key,Title text,Date text,Time text,Status text)")
-            .then((value) {
-          print("table created");
-        }).catchError((onError) {
-          print("error to create table ${onError.toString()}");
+        // createTable(myDatabase);
+      }, onOpen: (myDatabase)  {
+        createTable(myDatabase);
+        getDataFromDatabase(myDatabase).then((value) {
+          setState(() {
+            tasks = value;
+          });
+          print(tasks);
         });
-      }, onOpen: (myDatabase) {
         print("open database");
+        // dropTable(myDatabase);
+        // print("Table deleted");
+        // deleteFromDatabase(myDatabase);
+        // print("data deleted");
       });
     } catch (e) {
       print("error when create database ${e.toString()}");
@@ -207,11 +216,36 @@ class _HomeLayoutState extends State<HomeLayout> {
   }
 
   Future insertIntoDatabase(
-      {@required String title, @required String date, @required String time}) async {
+      {@required String title,
+      @required String date,
+      @required String time}) async {
     return await myDatabase.transaction((txn) async {
-      int id1 = await txn.rawInsert(
+      await txn.rawInsert(
           "insert into Tasks(title,date,time,status) values('$title','$date','$time','current')");
-      print("$id1 was inserted successfully");
+      print("inserted successfully");
+    });
+  }
+
+  Future<List<Map>> getDataFromDatabase(myDatabase) async {
+    return await myDatabase.rawQuery("select * from Tasks");
+  }
+
+  deleteFromDatabase(myDatabase) async {
+    await myDatabase.rawDelete('delete from Tasks where Title="هههههه"');
+  }
+
+  dropTable(myDatabase) async {
+    await myDatabase.execute("DROP TABLE Tasks");
+  }
+
+  createTable(myDatabase) {
+    myDatabase
+        .execute(
+            "create table IF NOT EXISTS Tasks(id INTEGER PRIMARY KEY,Title text,Date text,Time text,Status text)")
+        .then((value) {
+      print("table created");
+    }).catchError((onError) {
+      print("error to create table ${onError.toString()}");
     });
   }
 }
