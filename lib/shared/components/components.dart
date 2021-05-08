@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 
 class DefaultFormValidation extends StatelessWidget {
-  @required
-  TextEditingController textController;
-  @required
-  String label;
-  @required
-  TextInputType type;
-  @required
-  Function onTap;
-  @required
-  IconData prefix;
-  @required
-  Function validate;
+  @required TextEditingController textController;
+  @required String label;
+  @required TextInputType type;
+  @required Function onTap;
+  @required IconData prefix;
+  @required Function validate;
 
   DefaultFormValidation(
       {this.label,
