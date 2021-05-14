@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 class DefaultFormValidation extends StatelessWidget {
-  @required TextEditingController textController;
-  @required String label;
-  @required TextInputType type;
-  @required Function onTap;
-  @required IconData prefix;
-  @required Function validate;
+  @required
+  TextEditingController textController;
+  @required
+  String label;
+  @required
+  TextInputType type;
+  @required
+  Function onTap;
+  @required
+  IconData prefix;
+  @required
+  Function validate;
 
   DefaultFormValidation(
       {this.label,
@@ -34,9 +40,7 @@ class DefaultFormValidation extends StatelessWidget {
   }
 }
 
-
-
-Widget buildContainerTask( Map map) {
+Widget buildContainerTask({Map taskList, onPressed}) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
     child: Container(
@@ -44,11 +48,10 @@ Widget buildContainerTask( Map map) {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
-
               child: Padding(
                 padding: const EdgeInsets.all(5.0),
                 child: Text(
-                  map["Time"],
+                  taskList["Time"],
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -61,18 +64,26 @@ Widget buildContainerTask( Map map) {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                map["Title"],
+                taskList["Title"],
                 style: TextStyle(fontSize: 20),
-              ),SizedBox(
-            height: 4,
-          ),
-              Text(map["Date"],
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              Text(taskList["Date"],
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
                   ))
             ],
-          )
+          ),
+          Spacer(),
+
+          IconButton(
+              icon: Icon(Icons.delete_forever, color: Colors.red, size: 30),
+              onPressed:onPressed),
+
+          // Icon(Icons.delete_forever,color: Colors.red,),
         ],
       ),
     ),
