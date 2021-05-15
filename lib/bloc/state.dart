@@ -13,3 +13,6 @@ class AppGetFromDatabase extends AppState {}
 class ChangeButtonState extends AppState {}
 
 class DeleteButtonState extends AppState {}
+
+class AppUpdateDatabase extends AppState {}
+

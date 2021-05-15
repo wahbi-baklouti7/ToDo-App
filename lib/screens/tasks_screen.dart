@@ -19,13 +19,15 @@ class _TasksScreenState extends State<TasksScreen> {
           separatorBuilder: (BuildContext context, index) => Divider(
             thickness: 0.5,
           ),
-          itemCount: AppCubit.get(context).tasks.length,
+          itemCount: AppCubit.get(context).newTasks.length,
           itemBuilder: (context, index) => buildContainerTask(
-              taskList: AppCubit.get(context).tasks[index],
-              onPressed: () {
-                AppCubit.get(context).deleteTask(
-                    taskIndex: AppCubit.get(context).tasks[index]["id"]);
-              }),
+              taskList: AppCubit.get(context).newTasks[index],
+              context: context,
+              isChecked:AppCubit.get(context).buttonIsChecked ,
+              colorCheckBox:AppCubit.get(context).buttonIsChecked?Colors.green:Colors.black,
+              iconBox: AppCubit.get(context).buttonIsChecked? Icons.check_box:Icons.check_box_outline_blank,
+              indexTask: index,
+              onPressed:(){}),
         );
       },
     );

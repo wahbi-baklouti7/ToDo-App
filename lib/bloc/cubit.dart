@@ -15,10 +15,17 @@ class AppCubit extends Cubit<AppState> {
   int selectedScreen = 0;
   List<Widget> screens = [TasksScreen(), DoneScreen(), ArchivedScreen()];
 
+  List<Map> newTasks = [];
+  List<Map> doneTasks = [];
+  List<Map> archiveTasks = [];
+
   Database myDatabase;
   bool isBottomSheetShown = false;
   IconData flatIcon = Icons.edit;
-  List<Map> tasks = [];
+
+  bool buttonIsChecked = false;
+  bool buttonArchive = false;
+
 
   // change the index of bottom navigator sheet
   void getCurrentScreenIndex(int index) {
@@ -32,12 +39,7 @@ class AppCubit extends Cubit<AppState> {
       print("Database created");
       createTable(myDatabase);
     }, onOpen: (myDatabase) {
-      getDataFromDatabase(myDatabase).then((value) {
-        tasks = value;
-
-        emit(AppGetFromDatabase());
-        print(tasks);
-      });
+      getDataFromDatabase(myDatabase);
       print("open database");
     }).then((value) {
       myDatabase = value;
@@ -57,27 +59,40 @@ class AppCubit extends Cubit<AppState> {
     });
   }
 
+  // insert data into database
   void insertIntoDatabase(
       {@required String title,
       @required String date,
       @required String time}) async {
     myDatabase.transaction((txn) async {
       await txn.rawInsert(
-          "insert into Tasks(title,date,time,status) values('$title','$date','$time','current')");
+          "insert into Tasks(title,date,time,status) values('$title','$date','$time','New')");
     }).then((value) {
       print("inserted successfully");
       emit(AppInsertIntoDatabase());
 
-      getDataFromDatabase(myDatabase).then((value) {
-        tasks = value;
-        print(tasks);
-        emit(AppGetFromDatabase());
-      });
+      getDataFromDatabase(myDatabase);
     });
   }
 
-  Future<List<Map>> getDataFromDatabase(myDatabase) async {
-    return await myDatabase.rawQuery("select * from Tasks");
+  // retrieve data form database
+  void getDataFromDatabase(myDatabase) {
+    newTasks = [];
+    doneTasks = [];
+    archiveTasks = [];
+    myDatabase.rawQuery("select * from Tasks").then((value) {
+      value.forEach((element) {
+        if (element["Status"] == "New") {
+          newTasks.add(element);
+        } else if (element["Status"] == "Done") {
+          doneTasks.add(element);
+        } else {
+          archiveTasks.add(element);
+        }
+      });
+      print(newTasks);
+      emit(AppGetFromDatabase());
+    });
   }
 
   void changeButtonState({@required bool isShow, @required IconData icon}) {
@@ -86,16 +101,33 @@ class AppCubit extends Cubit<AppState> {
     emit(ChangeButtonState());
   }
 
+  // delete data from database
   void deleteTask({@required int taskIndex}) {
     myDatabase.rawDelete('DELETE FROM Tasks WHERE id=$taskIndex').then((value) {
       print("index:taskIndex");
       emit(DeleteButtonState());
-
-      getDataFromDatabase(myDatabase).then((value) {
-        tasks = value;
-        print(tasks);
-        emit(AppGetFromDatabase());
-      });
+      getDataFromDatabase(myDatabase);
     });
+  }
+
+  // update data 
+  updateDatabase({@required String newStatus, @required int id}) {
+    myDatabase.rawUpdate("UPDATE Tasks set Status=? WHERE id=?",
+        ["$newStatus", "$id"]).then((value) {
+      emit(AppUpdateDatabase());
+      getDataFromDatabase(myDatabase);
+    });
+  }
+
+  // check button
+  void buttonCheckState() {
+    buttonIsChecked = !buttonIsChecked;
+    emit(ChangeButtonState());
+  }
+  
+  // archive button
+  void buttonArchiveState() {
+    buttonArchive = !buttonArchive;
+    emit(ChangeButtonState());
   }
 }

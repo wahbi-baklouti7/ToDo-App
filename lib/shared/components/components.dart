@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/bloc/cubit.dart';
 
 class DefaultFormValidation extends StatelessWidget {
   @required
@@ -40,7 +41,15 @@ class DefaultFormValidation extends StatelessWidget {
   }
 }
 
-Widget buildContainerTask({Map taskList, onPressed}) {
+Widget buildContainerTask({
+  Map taskList,
+  onPressed,
+  context,
+  int indexTask,
+  bool isChecked,
+  Color colorCheckBox = Colors.black,
+  IconData iconBox = Icons.check_box_outline_blank_outlined,
+}) {
   return Padding(
     padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
     child: Container(
@@ -74,14 +83,33 @@ Widget buildContainerTask({Map taskList, onPressed}) {
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
-                  ))
+                  )),
             ],
           ),
           Spacer(),
-
           IconButton(
-              icon: Icon(Icons.delete_forever, color: Colors.red, size: 30),
-              onPressed:onPressed),
+            icon: Icon(iconBox, size: 30),
+            color: Colors.black,
+            onPressed: () {
+              print("Task id: ${taskList["id"]}");
+              print("indexTaskId: $indexTask");
+              AppCubit.get(context).buttonCheckState();
+              AppCubit.get(context)
+                  .updateDatabase(newStatus: "Done", id: taskList["id"]);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+                AppCubit.get(context).buttonArchive
+                    ? Icons.archive
+                    : Icons.archive_outlined,
+                size: 30),
+            onPressed: () {
+              AppCubit.get(context).buttonArchiveState();
+              AppCubit.get(context)
+                  .updateDatabase(newStatus: "Archive", id: taskList["id"]);
+            },
+          )
 
           // Icon(Icons.delete_forever,color: Colors.red,),
         ],
