@@ -26,7 +26,6 @@ class AppCubit extends Cubit<AppState> {
   bool buttonIsChecked = false;
   bool buttonArchive = false;
 
-
   // change the index of bottom navigator sheet
   void getCurrentScreenIndex(int index) {
     selectedScreen = index;
@@ -102,15 +101,16 @@ class AppCubit extends Cubit<AppState> {
   }
 
   // delete data from database
-  void deleteTask({@required int taskIndex}) {
-    myDatabase.rawDelete('DELETE FROM Tasks WHERE id=$taskIndex').then((value) {
-      print("index:taskIndex");
-      emit(DeleteButtonState());
+  void deleteTask({@required int id}) {
+    myDatabase
+        .rawDelete('DELETE FROM Tasks WHERE id=?',[id]).then((value) {
+      
+      emit(AppDeleteDatabase());
       getDataFromDatabase(myDatabase);
     });
   }
 
-  // update data 
+  // update data
   updateDatabase({@required String newStatus, @required int id}) {
     myDatabase.rawUpdate("UPDATE Tasks set Status=? WHERE id=?",
         ["$newStatus", "$id"]).then((value) {
@@ -120,14 +120,14 @@ class AppCubit extends Cubit<AppState> {
   }
 
   // check button
-  void buttonCheckState() {
-    buttonIsChecked = !buttonIsChecked;
+  void buttonCheckState({bool newState}) {
+    buttonIsChecked = newState;
     emit(ChangeButtonState());
   }
-  
+
   // archive button
-  void buttonArchiveState() {
-    buttonArchive = !buttonArchive;
+  void buttonArchiveState({bool newState}) {
+    buttonArchive = newState;
     emit(ChangeButtonState());
   }
 }

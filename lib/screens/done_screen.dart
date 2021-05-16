@@ -18,10 +18,7 @@ class DoneScreen extends StatelessWidget {
           itemCount: AppCubit.get(context).doneTasks.length,
           itemBuilder: (context, index) => buildContainerTask(
               taskList: AppCubit.get(context).doneTasks[index],context: context,
-              onPressed: () {
-                AppCubit.get(context).deleteTask(
-                    taskIndex: AppCubit.get(context).doneTasks[index]["id"]);
-              }),
+              ),
         );
       },
     );

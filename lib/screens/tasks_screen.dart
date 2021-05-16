@@ -15,19 +15,22 @@ class _TasksScreenState extends State<TasksScreen> {
     return BlocConsumer<AppCubit, AppState>(
       listener: (context, state) {},
       builder: (context, state) {
+        var tasks= AppCubit.get(context).newTasks;
         return ListView.separated(
+
+          
           separatorBuilder: (BuildContext context, index) => Divider(
             thickness: 0.5,
           ),
-          itemCount: AppCubit.get(context).newTasks.length,
+
+          itemCount: tasks.length,
           itemBuilder: (context, index) => buildContainerTask(
-              taskList: AppCubit.get(context).newTasks[index],
+              taskList:tasks[index],
               context: context,
-              isChecked:AppCubit.get(context).buttonIsChecked ,
               colorCheckBox:AppCubit.get(context).buttonIsChecked?Colors.green:Colors.black,
               iconBox: AppCubit.get(context).buttonIsChecked? Icons.check_box:Icons.check_box_outline_blank,
               indexTask: index,
-              onPressed:(){}),
+              ),
         );
       },
     );
