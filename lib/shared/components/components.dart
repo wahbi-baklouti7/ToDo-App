@@ -89,13 +89,12 @@ Widget buildContainerTask({
             Spacer(),
             IconButton(
               icon: Icon(iconBox, size: 30),
-              // color: (taskList["id"] == taskList[indexTask]["id"])
-              //     ? Colors.green
-              //     : Colors.black,
+              color:(taskList["Status"]!="New")?Colors.green:Colors.black,
+              // color:(AppCubit.get(context).buttonCheckState()==taskList["id"])?Colors.green:Colors.black,
               onPressed: () {
                 print("Task id: ${taskList["id"]}");
                 print("indexTaskId: $indexTask");
-                AppCubit.get(context).buttonCheckState(newState: true);
+                AppCubit.get(context).buttonCheckState(newState:true );
                 AppCubit.get(context)
                     .updateDatabase(newStatus: "Done", id: taskList["id"]);
               },
@@ -108,12 +107,12 @@ Widget buildContainerTask({
                   size: 30),
               onPressed: () {
                 AppCubit.get(context).buttonArchiveState(newState: true);
+
                 AppCubit.get(context)
                     .updateDatabase(newStatus: "Archive", id: taskList["id"]);
               },
             )
 
-            // Icon(Icons.delete_forever,color: Colors.red,),
           ],
         ),
       ),
@@ -122,4 +121,45 @@ Widget buildContainerTask({
       AppCubit.get(context).deleteTask(id: taskList["id"]);
     },
   );
+}
+
+Widget emptyScreen() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Add Task",
+            style: TextStyle(
+              fontSize: 40,
+              color: Colors.grey,
+            )),
+            Icon(Icons.add_circle_outline,size: 50,color: Colors.grey,)
+      ],
+    ),
+  );
+}
+
+
+Widget taskBuilder({
+  @required tasks
+}){
+  if (tasks.length <= 0) {
+          return emptyScreen();
+        } else {
+          return ListView.separated(
+            separatorBuilder: (BuildContext context, index) => Divider(
+              thickness: 0.5,
+            ),
+            itemCount: tasks.length,
+            itemBuilder: (context, index) => buildContainerTask(
+              taskList: tasks[index],
+              context: context,
+              // colorCheckBox:(AppCubit.get(context).buttonCheckState()==tasks[index]["id"])?Colors.green:Colors.black,
+              iconBox: AppCubit.get(context).buttonIsChecked
+                  ? Icons.check_box
+                  : Icons.check_box_outline_blank,
+              indexTask: index,
+            ),
+          );
+        }
 }

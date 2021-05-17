@@ -102,9 +102,7 @@ class AppCubit extends Cubit<AppState> {
 
   // delete data from database
   void deleteTask({@required int id}) {
-    myDatabase
-        .rawDelete('DELETE FROM Tasks WHERE id=?',[id]).then((value) {
-      
+    myDatabase.rawDelete('DELETE FROM Tasks WHERE id=?', [id]).then((value) {
       emit(AppDeleteDatabase());
       getDataFromDatabase(myDatabase);
     });
@@ -121,8 +119,8 @@ class AppCubit extends Cubit<AppState> {
 
   // check button
   void buttonCheckState({bool newState}) {
-    buttonIsChecked = newState;
     emit(ChangeButtonState());
+    buttonIsChecked = newState;
   }
 
   // archive button

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/bloc/cubit.dart';
+import 'package:todo_app/bloc/state.dart';
+import 'package:todo_app/shared/components/components.dart';
 
-class ArchivedScreen extends StatefulWidget {
-  @override
-  _ArchivedScreenState createState() => _ArchivedScreenState();
-}
-
-class _ArchivedScreenState extends State<ArchivedScreen> {
+class ArchivedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(child: Text("Archived",style: TextStyle(fontSize: 40,color: Colors.black),)),
+    return BlocConsumer<AppCubit, AppState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        var tasks = AppCubit.get(context).archiveTasks;
+
+        return taskBuilder(tasks: tasks);
+      },
     );
   }
 }
